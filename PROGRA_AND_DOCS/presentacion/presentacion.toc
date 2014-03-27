@@ -1,0 +1,9 @@
+\beamer@endinputifotherversion {3.10pt}
+\select@language {spanish}
+\beamer@sectionintoc {1}{Intro...}{3}{0}{1}
+\beamer@sectionintoc {2}{LEED (Low Energy Electron Diffraction)}{5}{0}{2}
+\beamer@sectionintoc {3}{OpenCV+Python}{8}{0}{3}
+\beamer@sectionintoc {4}{Funcionalidades b\IeC {\'a}sicas del programa}{10}{0}{4}
+\beamer@sectionintoc {5}{OpenCV... un poco m\IeC {\'a}s}{13}{0}{5}
+\beamer@sectionintoc {6}{\IeC {\textquestiondown }Qu\IeC {\'e} hay extra?}{16}{0}{6}
+\beamer@sectionintoc {7}{Conclusi\IeC {\'o}n y \IeC {\textquestiondown }qu\IeC {\'e} falta?}{18}{0}{7}

@@ -1,0 +1,745 @@
+% This text is proprietary.
+% It's a part of presentation made by myself.
+% It may not used commercial.
+% The noncommercial use such as private and study is free
+% Sep. 2005 
+% Author: Sascha Frank 
+% University Freiburg 
+% www.informatik.uni-freiburg.de/~frank/
+
+
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{listings}
+%para poder usar begin comment y end document y asi comentar varias lineas
+\usepackage{verbatim}
+
+\begin{document}
+\title{Proyecto Final\\Módulo computacional para análisis de videos tomados a través del método experimental LEED}
+\author{SP2118}
+\date{\today}
+
+\frame{\titlepage}
+
+\frame{\frametitle{Contenidos de la presentación}\tableofcontents}
+
+\section{Intro...}
+
+\frame{\frametitle{Intro...}
+\begin{center}Descripción general\end{center}
+}
+
+\frame{\frametitle{Intro...}
+\begin{center}¿Para quién es esto?\end{center}
+}
+
+\section{LEED (Low Energy Electron Diffraction)}
+
+\frame{\frametitle{LEED (Low Energy Electron Diffraction)}
+\begin{center}¿Qué es?/¿Cómo funciona?/Ley de Bragg\end{center}
+}
+
+\frame{\frametitle{LEED (Low Energy Electron Diffraction)}
+\begin{center}¿Para qué?\end{center}
+}
+
+\frame{\frametitle{LEED (Low Energy Electron Diffraction)}
+\begin{center}¿Quién lo hace en CR?/¿Y en el mundo?\end{center}
+}
+
+\section{OpenCV+Python}
+
+\frame{\frametitle{OpenCV+Python}
+\begin{center}Instalación...!!\end{center}
+}
+
+\frame{\frametitle{OpenCV+Python}
+\begin{center}Fácil de usar\end{center}
+}
+
+\section{Funcionalidades básicas del programa}
+
+\frame{\frametitle{Funcionalidades básicas del programa}
+\begin{center}Transformador de videos\end{center}
+}
+
+\frame{\frametitle{Funcionalidades básicas del programa}
+\begin{center}Detención y reanudación (q)/Interrupción (s)\end{center}
+}
+
+\frame{\frametitle{Funcionalidades básicas del programa}
+\begin{center}Dibujado/Devolverse (sin borrar lo dibujado)\end{center}
+}
+
+\section{OpenCV... un poco más}
+
+\frame{\frametitle{OpenCV... un poco más}
+\begin{center}Lectura de videos/Escala de grises\end{center}
+}
+
+\frame{\frametitle{OpenCV... un poco más}
+\begin{center}Dibujado sobre frames/Eventos\end{center}
+}
+
+\frame{\frametitle{OpenCV... un poco más}
+\begin{center}Obtención de intensidades promedio/Máscaras\end{center}
+}
+\section{¿Qué hay extra?}
+
+\frame{\frametitle{¿Qué hay extra?}
+\begin{center}Bastante automatizado\end{center}
+}
+
+\frame{\frametitle{¿Qué hay extra?}
+\begin{center}Se da la opción de respaldar en repo/Bastante ordenado/¿Qué se genera?\end{center}
+}
+
+
+\section{Conclusión y ¿qué falta?}
+\frame{\frametitle{Conclusión y ¿qué falta?}
+\begin{center}Conclusión\end{center}
+}
+
+\frame{\frametitle{Conclusión y ¿qué falta?}
+\begin{center}¿Qué falta?/3D\end{center}
+}
+
+\frame{\frametitle{}
+\begin{center}Gracias\\¿Preguntas y/o recomendaciones?\end{center}
+}
+
+
+
+
+
+
+
+
+\begin{comment}
+
+
+\section{Determinación del desplazamiento y la velocidad a partir de la aceleración}
+\frame{\frametitle{Determinación del desplazamiento y la velocidad a partir de la aceleración}
+Segundo teorema fundamental del cálculo diferencial e integral:\\
+\begin{itemize}
+\item Dada una función $\displaystyle f(x)$ continua en el intervalo $\displaystyle [a,b]$ y sea $\displaystyle F(x)$ cualquier función primitiva de $\displaystyle f$, es decir, $\displaystyle F'(x)=f(x)$, entonces:\\
+\begin{center}
+$\displaystyle \int_{a}^{b}f(x)dx=F(b)-F(a)$
+\end{center}
+\end{itemize}
+}
+
+
+\frame{\frametitle{Determinación del desplazamiento y la velocidad a partir de la aceleración}
+Ayudados del segundo teorema fundamental del cálculo:\\
+\begin{center}
+$\displaystyle v_{x}(t)=\frac{dx(t)}{dt}\Rightarrow v_{x}(t')dt'=\frac{dx(t')}{dt'}dt'\Rightarrow $ \\ $\displaystyle \int _{t_{0}}^{t} v_{x}(t')dt'=\int_{t_{0}}^{t} \frac{dx(t')}{dt'}dt'=x(t)-x(t_{0})$\\ $\displaystyle \Rightarrow x(t)=x_{0}+\int_{t_{0}}^{t}v_{x}(t')dt' $
+\end{center}
+}
+
+
+\frame{\frametitle{Determinación del desplazamiento y la velocidad a partir de la aceleración}
+E igualmente, para la aceleración:\\
+\begin{center}
+$\displaystyle a_{x}(t)=\frac{dv_{x}(t)}{dt}\Rightarrow$\\
+$\displaystyle v_{x}(t)=v_{x0}+\int_{t_{0}}^{t}a_{x}(t')dt' $
+\end{center}
+}
+
+
+\frame{\frametitle{Determinación del desplazamiento y la velocidad a partir de la aceleración}
+Más adelante se trabajará con las demás componentes de los vectores de posición, velocidad y aceleración:\\
+\begin{center}
+$\displaystyle \vec{r}(t)=\vec{r}_{0}+\int_{t_{0}}^{t}\vec{v}(t')dt' $\\
+$\displaystyle \vec{v}(t)=\vec{v}_{0}+\int_{t_{0}}^{t}\vec{a}(t')dt' $
+\end{center}
+}
+
+
+\section{Movimiento con aceleración constante}
+\frame{\frametitle{Movimiento con aceleración constante}
+Se toma $\displaystyle a_{x}$ constante, y $\displaystyle t_{0}=0$:\\
+\begin{center}
+$\displaystyle v_{x}(t)=v_{x0}+\int_{t_{0}}^{t}a_{x}(t')dt' \Rightarrow v_{x}(t)=v_{x0}+a_{x}(t-0 ) $\\
+$\displaystyle v_{x}(t)=v_{x0}+a_{x}t$
+\end{center}
+}
+
+\frame{\frametitle{Movimiento con aceleración constante}
+Se toma $\displaystyle a_{x}$ constante, y $\displaystyle t_{0}=0$:\\
+\begin{center}
+$\displaystyle v_{x}(t)=v_{x0}+a_{x}t \surd $\\
+$\displaystyle x(t)=x_{0}+\int_{t_{0}}^{t}v_{x}(t')dt' \Rightarrow x(t)=x_{0}+\int_{t_{0}}^{t}(v_{x0}+a_{x}t')dt' \Rightarrow x(t)=x_{0}+v_{x0}t+\frac{1}{2}a_{x}t^{2}$
+\end{center}
+}
+
+\frame{\frametitle{Movimiento con aceleración constante}
+Se toma $\displaystyle a_{x}$ constante, y $\displaystyle t_{0}=0$:\\
+\begin{center}
+$\displaystyle v_{x}(t)=v_{x0}+a_{x}t \surd  $\\
+$\displaystyle x(t)=x_{0}+v_{x0}t+\frac{1}{2}a_{x}t^{2} \surd $\\
+$\displaystyle \bar{v}_{x}=\frac{x-x_{0}}{t}\Rightarrow  \bar{v}_{x}=\frac{1}{2}(v_{x0}+v_{x})$
+\end{center}
+}
+
+
+
+\frame{\frametitle{Movimiento con aceleración constante}
+Se toma $\displaystyle a_{x}$ constante, y $\displaystyle t_{0}=0$:\\
+\begin{center}
+$\displaystyle v_{x}(t)=v_{x0}+a_{x}t \surd $\\
+$\displaystyle x(t)=x_{0}+v_{x0}t+\frac{1}{2}a_{x}t^{2} \surd $\\
+$\displaystyle \bar{v}_{x}=\frac{1}{2}(v_{x0}+v_{x}) \surd $\\
+$\displaystyle \bar{v}_{x}=\frac{x-x_{0}}{t}\Rightarrow x=x_{0}+\bar{v}_{x}t$
+\end{center}
+}
+
+
+\frame{\frametitle{Movimiento con aceleración constante}
+La última es un poco tediosa... truco:\\
+\begin{center}
+$\displaystyle v_{x}(t)=v_{x0}+a_{x}t\Rightarrow a_{x}t=v_{x}-v_{x0}$\\ \ \\
+$\displaystyle x=x_{0}+v_{x0}t+\frac{1}{2}a_{x}t^{2} \Rightarrow (a_{x}t)^{2}=2a_{x}(x-x_{0})-2a_{x}v_{x0}t \Rightarrow $\\
+$\displaystyle (v_{x}-v_{x0})^{2}=2a_{x}(x-x_{0})-2a_{x}v_{x0}t\Rightarrow $\\
+$\displaystyle v_{x}^{2}+v_{x0}^{2}-2v_{x0}v_{x}=2a_{x}(x-x_{0})-2a_{x}v_{x0}t$\\ \ \\
+$\displaystyle v_{x}^{2}=2v_{x0}v_{x}-2a_{x}v_{x0}t-v_{x0}^{2}+2a_{x}(x-x_{0})\Rightarrow $\\
+$\displaystyle v_{x}^{2}=2v_{x0}(v_{x}-a_{x}t)-v_{x0}^{2}+2a_{x}(x-x_{0})\Rightarrow $\\
+$\displaystyle v_{x}^{2}=v_{x0}^{2}+2a_{x}(x-x_{0}) $
+\end{center}
+}
+
+
+
+
+\frame{\frametitle{Movimiento con aceleración constante}
+Se toma $\displaystyle a_{x}$ constante, y $\displaystyle t_{0}=0$:\\
+\begin{center}
+$\displaystyle v_{x}(t)=v_{x0}+a_{x}t $\\
+$\displaystyle x(t)=x_{0}+v_{x0}t+\frac{1}{2}a_{x}t^{2}$\\
+$\displaystyle \bar{v}_{x}=\frac{1}{2}(v_{x0}+v_{x})$\\
+$\displaystyle x=x_{0}+\bar{v}_{x}t$\\
+$\displaystyle v_{x}^{2}=v_{x0}^{2}+2a_{x}(x-x_{0}) $
+\end{center}
+}
+
+
+\section{Práctica - Parte 2}
+\frame{\frametitle{Práctica - Parte 2}
+\textit{Problema 2.50, Bauer}\\
+¿Cuánto tiempo tarda un auto en acelerar desde el reposo hasta 22,2 m/s si la aceleración es constante y el auto avanza 243 m durante el período de aceleración?
+}
+
+
+\frame{\frametitle{Práctica - Parte 2}
+\textit{Problema 2.50, Bauer}\\
+\textit{Solución}\\
+Es dado:\\
+$\displaystyle v_{x0}=0 \ m/s, \ \ \  v_{xt_{f}}=22 \ m/s, \ \ \ \Delta x=x_{t_{f}}-x_{0}=243 \ m, \ \ \ a \ cte $
+Se utiliza entonces:\\
+$\displaystyle v_{x}^{2}=v_{x0}^{2}+2a_{x}(x-x_{0})\Rightarrow v_{xt_{f}}^{2}=2a_{x}(x_{t_{f}}-x_{0}) \Rightarrow a_{x}=\frac{v_{xt_{f}}^{2}}{2\Delta x}$\\
+junto con:\\
+$\displaystyle v_{x}=v_{x0}+a_{x}t\Rightarrow v_{xt_{f}}=a_{x}t_{f}\Rightarrow t_{f}=\frac{v_{x}t_{f}}{a_{x}}=\frac{2\Delta x}{v_{xt_{f}}}$
+
+}
+
+
+\frame{\frametitle{Práctica - Parte 2}
+\textit{Problema 2.50, Bauer}\\
+\textit{Solución}\\ \ \\
+Evaluando:\\ \ \\
+$\displaystyle t_{f}=\frac{2\Delta x}{v_{xt_{f}}}=\frac{2 \cdot 243 \ m}{22 \ m/s}=22 \ s \ $\\ \  \\
+}
+
+
+\frame{\frametitle{Práctica - Parte 2}
+\textit{Problema 2.50, Bauer}\\
+\textit{Solución}\\ \ \\
+$\displaystyle t_{f}=22 \ s$\\ \ \\
+Tiene sentido?\\
+Usain Bolt $\rightarrow $ en 2007, 200 m en 19,75 s $\rightarrow $ aprox. 10,13 m/s
+}
+
+
+
+\frame{\frametitle{Práctica - Parte 2}
+\textit{Problema 1, examen de suficiencia del II ciclo de 2011}.\\
+(aclarar notación unidimensional \& no se puede utilizar a cte)\\
+La aceleración de una partícula está dada por:
+\begin{center}
+$\displaystyle a=-2,0 \ \frac{m}{s^{2}}+\left( 3,0 \ \frac{m}{s^{3}} \right)t; \ \ \ v(0)=v_{0}; \ \ \ x(0)=0,0$
+\end{center}
+$\displaystyle x$ en metros y $\displaystyle t$ en segundos. \textbf{a}) Encuentre $\displaystyle v_{0}$ tal que $\displaystyle x(4)=x(0)$, \textbf{b}) Encuentre $\displaystyle v(4)$.\\
+}
+
+
+\frame{\frametitle{Práctica - Parte 2}
+\textit{Problema 1, examen de suficiencia del II ciclo de 2011}.\\
+\textit{Solución}\\
+PARTE A:\\
+Hay que hacer uso de la condición $\displaystyle x(4)=x(0)$; por lo tanto, se procede a encontrar $\displaystyle x(t)$:\\
+$\displaystyle v(t)=v_{0}+\int_{0}^{t}a(t')dt'=v_{0}+\int_{0}^{t}(-2t'+3t')dt'=$\\
+$\displaystyle v_{0}+\left( -2t+\frac{3t^{2}}{2} \right)\Rightarrow $\\
+$\displaystyle x=x_{0}+\int_{0}^{t}v(t')dt'=0+\int_{0}^{t}\left(v_{0}+\left( -2t'+\frac{3t'^{2}}{2} \right) \right)dt'=$\\
+$\displaystyle v_{0}t+\left( -t^{2}+\frac{t^{3}}{2} \right)$
+}
+
+
+\frame{\frametitle{Práctica - Parte 2}
+\textit{Problema 1, examen de suficiencia del II ciclo de 2011}.\\
+\textit{Solución}\\
+$\displaystyle x(t)=v_{0}t+\left( -t^{2}+\frac{t^{3}}{2} \right)$\\
+$\displaystyle x(4)=x(0)\Rightarrow 4\cdot v_{0}+(-4^{2}+4^{3}/2)=0\Rightarrow v_{0}=-4 \ m/s$\\
+}
+
+
+\frame{\frametitle{Práctica - Parte 2}
+\textit{Problema 1, examen de suficiencia del II ciclo de 2011}.\\
+\textit{Solución}\\
+PARTE B:\\
+$\displaystyle v(4)$=?\\ \ \\
+$\displaystyle v(t)=-4 \ m/s + \left( -2t+\frac{3t^{2}}{2} \right)\Rightarrow v(4)=12 \ m/s$
+}
+
+
+
+\section{Caída libre}
+\frame{\frametitle{Caída libre}
+Movimiento completamente vertical ($\displaystyle \vec{a}=a_{y}\hat{y}=-g\hat{y}\Rightarrow a_{y}=-g$):
+\begin{center}
+$\displaystyle v_{y}(t)=v_{y0}-gt $\\
+$\displaystyle y(t)=y_{0}+v_{y0}t-\frac{1}{2}gt^{2}$\\
+$\displaystyle \bar{v}_{y}=\frac{1}{2}(v_{y0}+v_{y})$\\
+$\displaystyle y=y_{0}+\bar{v}_{y}t$\\
+$\displaystyle v_{y}^{2}=v_{y0}^{2}-2g(y-y_{0}) $
+\end{center}
+}
+
+
+\frame{\frametitle{Caída libre}
+\textit{Problema 2.88 del Bauer:}\\
+Una chica está de pie al borde de un acantilado a 100 m arriba del suelo. Extiende el brazo y lanza una piedra directamente hacia arriba con una rapidez de 8 m/s.\\
+a) ¿Cuánto tarda la piedra en tocar el suelo?\\
+b) ¿Cuál es la velocidad de la piedra justo antes de tocar el suelo?
+}
+
+\frame{\frametitle{Caída libre}
+\textit{Problema 2.88 del Bauer:}\\
+\textit{Solución:}\\
+Dado:\\
+$\displaystyle v_{y0}=8 \ m/s$\\
+$\displaystyle y_{0}=100 \ m$ \\ \ \\
+Lo que se pide: $\displaystyle t$ tal que la piedra llega al fondo del acantilado, es decir, $\displaystyle y=0$
+}
+
+
+
+\frame{\frametitle{Caída libre}
+\textit{Problema 2.88 del Bauer:}\\
+\textit{Solución:}\\
+Herramientas disponibles:\\
+\begin{center}
+$\displaystyle v_{y}(t)=v_{y0}-gt $\\
+$\displaystyle y(t)=y_{0}+v_{y0}t-\frac{1}{2}gt^{2}$\\
+$\displaystyle \bar{v}_{y}=\frac{1}{2}(v_{y0}+v_{y})$\\
+$\displaystyle y=y_{0}+\bar{v}_{y}t$\\
+$\displaystyle v_{y}^{2}=v_{y0}^{2}-2g(y-y_{0}) $
+\end{center}
+}
+
+\frame{\frametitle{Caída libre}
+\textit{Problema 2.88 del Bauer:}\\
+\textit{Solución:}\\
+Herramientas disponibles:\\
+\begin{center}
+$\displaystyle v_{y}(t)=v_{y0}-gt $\\
+$\displaystyle y(t)=y_{0}+v_{y0}t-\frac{1}{2}gt^{2} \surd $\\
+$\displaystyle \bar{v}_{y}=\frac{1}{2}(v_{y0}+v_{y})$\\
+$\displaystyle y=y_{0}+\bar{v}_{y}t$\\
+$\displaystyle v_{y}^{2}=v_{y0}^{2}-2g(y-y_{0}) $
+\end{center}
+}
+
+
+
+\frame{\frametitle{Caída libre}
+\textit{Problema 2.88 del Bauer:}\\
+\textit{Solución:}\\
+Selección y planteamiento:\\
+\begin{center}
+$\displaystyle y(t)=y_{0}+v_{y0}t-\frac{1}{2}gt^{2} \Rightarrow y(t)=100+8t-\frac{1}{2}9,81t^{2} $\\
+$\displaystyle \Rightarrow y=0\rightarrow t=?$\\
+$\displaystyle 0=100+8t-\frac{1}{2}9,81t^{2} \Rightarrow$\\
+$\displaystyle t_{1}=-3,773 \ s$\\
+$\displaystyle t_{2}=5,404 \ s$
+\end{center}
+}
+
+
+\frame{\frametitle{Caída libre}
+\textit{Problema 2.88 del Bauer:}\\
+\textit{Solución:}\\
+Despeje y solución:\\
+\begin{center}
+$\displaystyle y(t)=y_{0}+v_{y0}t-\frac{1}{2}gt^{2} \Rightarrow y(t)=100+8t-\frac{1}{2}9,81t^{2} $\\
+$\displaystyle \Rightarrow y=0\rightarrow t=?$\\
+$\displaystyle 0=100+8t-\frac{1}{2}9,81t^{2} \Rightarrow$\\
+$\displaystyle t_{1}=-3,773 \ s$\\
+$\displaystyle t_{2}=5,404 \ s \surd$
+\end{center}
+}
+
+
+\section{Trabajo para la casa}
+\frame{\frametitle{Trabajo para la casa}
+\begin{itemize}
+\item Investigue por qué en la foto que aparece en la figura 2.1 del Bauer el tren se ve así de borroso, a pesar de que una foto es instantánea.
+\item Investigue lo que es la celeridad.
+\item Ejemplo 2.5 del Bauer, página 53.
+\item Problema 2.65 del Bauer, página 68.
+\item Problema 2.67 del Bauer, página 68.
+\item Problema 2.73 del Bauer, página 68.
+\item Problema 2.96 del Bauer, página 68.
+\item Problema 2.98 del Bauer, página 68.
+\end{itemize}
+}
+
+
+
+
+
+
+
+\subsection{Subsection no.1.1  }
+\frame{ 
+Without title somethink is missing. 
+}
+\end{comment}
+
+\begin{comment}
+\section{Lo que vamos a estudiar... un adelanto visual}
+\frame{\frametitle{Lo que vamos a estudiar... un adelanto visual}
+\begin{center}
+http://www.ndt-ed.org/EducationResources/HighSchool/Radiography/bremss \\ trahlung\_popup.html
+\end{center}
+}
+
+
+\section{Sobre el teorema de Noether}
+\frame{\frametitle{Sobre el teorema de Noether}
+\begin{center}
+$\displaystyle \phi (x)=\phi ' (x) + \alpha \Delta \phi (x)$ \ \ \ [1]
+\end{center}
+\begin{center}
+$\displaystyle 0=\delta S=\int d^{4}x   \left(   \frac{\partial \mathcal{L}}{\partial \phi}\delta \phi + \frac{\partial \mathcal{L}}{\partial(\partial_{\mu} \phi)} \delta (\partial_{\mu} \phi)  \right)    = \int d^{4}x \left( \frac{\partial \mathcal{L}}{\partial \phi} \delta \phi -\partial_{\mu}\left(\frac{\partial \mathcal{L}}{\partial(\partial_{\mu}\phi)}\right)\delta \phi + \partial _{\mu}\left(\frac{\partial \mathcal{L}}{\partial(\partial_{\mu}\phi)} \delta \phi \right) \right)$ \ \ \ [2] \\
+$\displaystyle S=\int L dt = \int \mathcal{L}(\phi, \partial_{\mu} \phi) d^{4}x$
+\end{center}
+}
+
+\frame{\frametitle{Teorema de la divergencia del cálculo integral vectorial, múltiples dimensiones}
+\begin{center}
+$\displaystyle \int_{V} \frac{\partial F_{i}}{\partial x_{i}}dV = \oint_{S}F_{i}n_{i}dS$ \ \ \ [3]
+\end{center}
+\begin{center}
+$\displaystyle \mathcal{L}(x)\rightarrow \mathcal{L}(x)+\alpha \partial_{\mu}\mathcal{J}^{\mu}(x)$ \ \ \ [4]
+\end{center}
+}
+
+\frame{\frametitle{Pasos finales en el desarrollo de Noether}
+\begin{center}
+$\displaystyle \alpha \Delta \mathcal{L} = \frac{\partial \mathcal{L}}{\partial \phi}(\alpha \Delta \phi)+\frac{\partial \mathcal{L}}{\partial(\partial_{\mu}\phi)}(\alpha \Delta (\partial_{\mu}\phi))$\\
+$\displaystyle =\frac{\partial \mathcal{L}}{\partial \phi}(\alpha \Delta \phi)+\frac{\partial \mathcal{L}}{\partial (\partial_{\mu}\phi)}\partial_{\mu}(\alpha \Delta \phi)$\\
+$\displaystyle = \alpha \partial_{\mu}\left( \frac{\partial \mathcal{L}}{\partial(\partial_{\mu}\phi)}\Delta \phi \right)+\alpha \left( \frac{\partial \mathcal{L}}{\partial \phi} - \partial_{\mu} \left( \frac{\partial \mathcal{L}}{\partial (\partial_{\mu}\phi)} \right) \right) \Delta \phi$ \ \ \ [5]
+\end{center}
+}
+
+\frame{\frametitle{Sobre la corriente conservada en el desarrollo de Noether}
+\begin{center}
+$\displaystyle \alpha \partial_{\mu}\mathcal{J}^{\mu}=\alpha \partial_{\mu} \left( \frac{\partial \mathcal{L}}{\partial (\partial_{\mu}\phi)} \Delta \phi \right) \Rightarrow \partial_{\mu}j^{\mu}=0, \ j^{\mu}(x)=\frac{\partial \mathcal{L}}{\partial(\partial_{\mu}\phi)}\Delta \phi - \mathcal{J}^{\mu} $ \ \ \ [6]
+\end{center}
+varios campos:
+\begin{center}
+$\displaystyle j^{\mu}(x) = \frac{\partial \mathcal{L}}{\partial (\partial_{\mu}\phi_{i})}\Delta \phi_{i} - \mathcal{J}^{\mu}$ \ \ \ [7]
+\end{center}
+}
+
+
+\frame{\frametitle{Carga asociada a la corriente conservada}
+\begin{center}
+$\displaystyle Q=\int_{todo}j^{0}d^{3}x$ \ \ \ [8]
+\end{center}
+}
+
+
+
+
+\section{El teorema de Noether y los diferentes Lagrangianos}
+\frame{\frametitle{El teorema de Noether y los diferentes Lagrangianos}
+\begin{itemize}
+\item Klein-Gordon, Yukawa y QED.
+\item Las corrientes del electromagnetismo normalmente se conservan.
+\end{itemize}
+}
+
+
+
+\section{Ecuaciones de Maxwell, transformada de Fourier y la fórmula integral de Cauchy}
+\frame{\frametitle{Ecuaciones de Maxwell, transformada de Fourier y la fórmula integral de Cauchy}
+\begin{center}
+$\displaystyle \partial_{\mu}F^{\mu \nu}=j^{\nu}$ \ \ \ [9]
+\end{center}
+\begin{center}
+$\displaystyle F_{\mu \nu}=\partial_{\mu}A_{\nu}-\partial_{\nu}A_{\mu}$ \ \ \ [10]
+\end{center}
+\begin{center}
+$\displaystyle \partial^{\mu}A_{\mu}=0$ \ \ \ [11]
+\end{center}
+}
+
+\frame{\frametitle{Ecuaciones de Maxwell, transformada de Fourier y la fórmula integral de Cauchy}
+\begin{center}
+$\displaystyle f(x)= \int \frac{d^{4}k}{(2 \pi)^{4}}e^{-ik\cdot x} \tilde{f} (k)$ \ \ \ [13] \\
+$\displaystyle \tilde{f}(k)= \int d^{4}x \ e^{ik\cdot x}f(x)$ \ \ \ [14]
+\end{center}
+}
+
+\frame{\frametitle{Ecuaciones de Maxwell, transformada de Fourier y la fórmula integral de Cauchy}
+\begin{center}
+$\displaystyle f(z_{0})=\frac{1}{2 \pi i}\int_{C}\frac{f(z)dz}{z-z_{0}}$
+\end{center}
+}
+
+\section{Cálculo clásico de Bremsstrahlung}
+\frame{\frametitle{Cálculo clásico de Bremsstrahlung}
+\begin{center}
+$\displaystyle j^{\mu}=(1,\vec{0})^{\mu}\cdot e \delta ^{(3)}(\vec{x})=\int dt \ (1,\vec{0})^{\mu} \cdot e \delta^{(4)}(x-y(t)) \ \ t.q. \ \ y^{\mu}(t)=(t,\vec{0})^{\mu} $ \ \ \ [15]
+\end{center}
+generalizando:
+\begin{center}
+$\displaystyle j^{\mu}=e\int d\tau \frac{dy^{\mu}(\tau)}{d\tau}\delta ^{(4)}(x-y(\tau)) $ \ \ \ [16]
+\end{center}
+y en nuestro caso:
+\begin{center}
+$\displaystyle y^{\mu}(\tau)=\frac{p^{\mu}}{m}\tau \ \ t.q. \ \ \tau <0$\\
+$\displaystyle y^{\mu}(\tau)=\frac{p'^{\mu}}{m}\tau \ \ t.q. \ \ \tau >0$ \ \ \ [17]
+\end{center}
+}
+
+\frame{\frametitle{Cálculo clásico de Bremsstrahlung}
+Combinando todo lo anterior:
+\begin{center}
+$\displaystyle j^{\mu}(x)=e\int_{0}^{\infty}d\tau \frac{p'^{\mu}}{m}\delta^{(4)}\left( x-\frac{p'}{m}\tau \right)+e\int_{-\infty}^{0}d\tau \frac{p^{\mu}}{m}\delta^{(4)}\left( x-\frac{p}{m}\tau \right) $ \ \ \ [18]
+\end{center}
+}
+
+
+\frame{\frametitle{Cálculo clásico de Bremsstrahlung}
+Aplicando transformada de Fourier:
+\begin{center}
+$\displaystyle \tilde{j}^{\mu}(k)=\int d^{4}x \ e^{ik\cdot x}j^{\mu}(x) =e\int_{0}^{\infty}d\tau \frac{p'^{\mu}}{m}e^{i(k\cdot p'/m+i\epsilon)\tau}+e\int_{-\infty}^{0}d\tau \ \frac{p^{\mu}}{m}e^{i(k\cdot p/m-i\epsilon)\tau}$\\
+$\displaystyle = ie\left( \frac{p'^{\mu}}{k\cdot p'+i\epsilon}-\frac{p^{\mu}}{k\cdot p-i\epsilon} \right)$ \ \ \ [19]
+\end{center}
+}
+
+
+\frame{\frametitle{Cálculo clásico de Bremsstrahlung}
+Haciendo uso del gauge de Lorentz:
+\begin{center}
+$\displaystyle \partial^{2}A^{\mu}=j^{\mu} \Rightarrow \int d^{4}x \ e^{ik\cdot x} \ \partial^{2}A^{\mu}=\int d^{4}x \ e^{ik\cdot x} j^{\mu} $ \ \ \ [20]
+\end{center}
+con lo que se obtiene:
+\begin{center}
+$\displaystyle \tilde{A}^{\mu}(k)=-\frac{1}{k^{2}}\tilde{j}^{\mu}(k) $ \ \ \ [21]
+\end{center}
+}
+
+\frame{\frametitle{Cálculo clásico de Bremsstrahlung}
+Introduciendo la corriente:
+\begin{center}
+$\displaystyle \tilde{A}^{\mu}(k)=\frac{-ie}{k^{2}}\left( \frac{p'^{\mu}}{k\cdot p'+i\epsilon}-\frac{p^{\mu}}{k\cdot p-i\epsilon} \right)$ \ \ \ [22]
+\end{center}
+y aplicando transformada inversa:
+\begin{center}
+$\displaystyle A^{\mu}(x)=\int\frac{d^{4}x}{(2 \pi)^{4}}e^{-ik\cdot x}\frac{-ie}{k^{2}}\left( \frac{p'^{\mu}}{k\cdot p'+i\epsilon}-\frac{p^{\mu}}{k\cdot p-i\epsilon} \right) $ \ \ \ [23]
+\end{center}
+}
+
+
+\frame{\frametitle{Cálculo clásico de Bremsstrahlung}
+Polo superior:
+\begin{center}
+$\displaystyle A^{\mu}(x)=\int\frac{d^{3}x}{(2 \pi)^{3}}e^{i\vec{k}\cdot \vec{x}}e^{-i(\vec{k}\cdot \vec{p}/p^{0})t}\frac{(2 \pi i)(ie)}{(2 \pi)k^{2}}\frac{p^{\mu}}{p^{0}} $ \ \ \ [24]
+\end{center}
+y evaluando en $\displaystyle p^{\mu}=(p^{0},\vec{0})^{\mu}$:
+\begin{center}
+$\displaystyle A^{\mu}(x)=\int \frac{d^{3}x}{(2 \pi)^{3}}e^{i\vec{k}\cdot \vec{x}}\frac{e}{\vec{k}^{2}}\cdot (1,\vec{0})^{\mu}$ \ \ \ [25]
+\end{center}
+}
+
+\frame{\frametitle{Cálculo clásico de Bremsstrahlung}
+Polo inferior análogo al superior:
+\begin{center}
+$\displaystyle A^{\mu}(x)=-\int\frac{d^{3}x}{(2 \pi)^{3}}e^{i\vec{k}\cdot \vec{x}}e^{-i(\vec{k}\cdot \vec{p'}/p^{0})t}\frac{e}{\left( \frac{\vec{k}\cdot \vec{p'}}{p'^{0}}-\vec{k} \right)^{2}}\frac{p'^{\mu}}{p'^{0}} $ \ \ \ [26]
+\end{center}
+}
+
+\frame{\frametitle{Cálculo clásico de Bremsstrahlung}
+Polos restantes:
+\begin{center}
+$\displaystyle A^{\mu}_{rad}(x)= \left. \int \frac{d^{3}k}{(2 \pi)^{3}}\frac{-e}{2\mid \vec{k}\mid} \left \{ e^{-ik\cdot x}\left( \frac{p'^{\mu}}{k\cdot p'}-\frac{p^{\mu}}{k\cdot p} \right) + c.c. \right \} \right|_{k^{0}=\mid \vec{k} \mid}$\\
+$\displaystyle = \left. Re \int \frac{d^{3}k}{(2 \pi)^{3}}\mathcal{A}^{\mu}(\vec{k})e^{-ik\cdot x} \right|_{k^{0}=\mid \vec{k} \mid} $ \ \ \ [27]
+\end{center}
+con:
+\begin{center}
+$\displaystyle \mathcal{A}^{\mu}(\vec{k})= \left. \frac{-e}{\mid \vec{k} \mid}\left( \frac{p'^{\mu}}{k\cdot p'}-\frac{p^{\mu}}{k\cdot p} \right) \right|_{k^{0}=\mid \vec{k} \mid} $ \ \ \ [28]
+\end{center}
+}
+
+
+\frame{\frametitle{Cálculo clásico de Bremsstrahlung}
+Energía de la radiación:
+\begin{center}
+$\displaystyle e_{rad}=\left.\int \frac{d^{3}k}{(2 \pi )^{3}}\frac{e^{2}}{2}\left( \frac{2p\cdot p'}{(k\cdot p')(k\cdot p)}-\frac{m^{2}}{(k\cdot p')^{2}}-\frac{m^{2}}{(k\cdot p)^{2}} \right) \right  |_{k^{0}=\mid \vec{k} \mid}$ \ \ \ [29]
+\end{center}
+}
+
+
+
+\section{Tomando un marco de referencia en específico}
+\frame{\frametitle{Tomando un marco de referencia en específico}
+Se elige un marco en el que $\displaystyle p^{0}=p'^{0}=E$, tal que:
+\begin{center}
+$\displaystyle k^{\mu}=(k,\vec{k}) \ \ \ \ p^{\mu}=E(1,\vec{v}) \ \ \ \ p'^{\mu}=E(1,\vec{v'})$ \ \ \ [30] \\
+\end{center}
+\begin{center}
+\tiny
+$\displaystyle e_{rad}=\left.\int \frac{\mid \vec{k} \mid ^{2} dk \ d\Omega _{\hat{k}}}{4\pi (2 \pi )^{2}}e^{2}\left( \frac{2E^{2}(1-\vec{v}\cdot \vec{v'})}{\mid \vec{k} \mid ^{2} E^{2} (1-\hat{k}\cdot \vec{v})(1-\hat{k}\cdot \vec{v'})}- \frac{m^{2}}{\mid \vec{k} \mid ^{2} E^{2}(1-\hat{k}\cdot \vec{v'})^{2}}-\frac{m^{2}}{\mid \vec{k} \mid ^{2} E^{2}(1-\hat{k}\cdot \vec{v})^{2}} \right) \right  |_{k^{0}=\mid \vec{k} \mid}$ \ \ \ [31]
+\end{center}
+}
+
+\frame{\frametitle{Tomando un marco de referencia en específico}
+\begin{center}
+$\displaystyle e_{rad}=\int_{0}^{\infty} dk \ \mathcal{I}(\vec{v},\vec{v'})$ \ \ \ [32]
+\end{center}
+\begin{center}
+$\displaystyle e_{rad}=\int_{0}^{k_{max}} dk \ \mathcal{I}(\vec{v},\vec{v'})=k_{max}\mathcal{I}(\vec{v},\vec{v'}) $ \ \ \ [32]
+\end{center}
+}
+
+
+\section{Para qué sirve todo esto? Y una posible fuente de error...}
+\frame{\frametitle{}
+\begin{center}
+\begin{itemize}
+\item Una posible fuente de error...\\
+\item Y para qué sirve todo esto?
+\end{itemize}
+\end{center}
+}
+
+
+\frame{\frametitle{}
+\begin{center}
+Gracias
+\end{center}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Section no. 2} 
+\subsection{Lists I}
+\frame{\frametitle{unnumbered lists}
+\begin{itemize}
+\item Introduction to  \LaTeX  
+\item Course 2 
+\item Termpapers and presentations with \LaTeX 
+\item Beamer class
+\end{itemize} 
+}
+
+\frame{\frametitle{lists with pause}
+\begin{itemize}
+\item Introduction to  \LaTeX \pause 
+\item Course 2 \pause 
+\item Termpapers and presentations with \LaTeX \pause 
+\item Beamer class
+\end{itemize} 
+}
+
+\subsection{Lists II}
+\frame{\frametitle{numbered lists}
+\begin{enumerate}
+\item Introduction to  \LaTeX  
+\item Course 2 
+\item Termpapers and presentations with \LaTeX 
+\item Beamer class
+\end{enumerate}
+}
+\frame{\frametitle{numbered lists with pause}
+\begin{enumerate}
+\item Introduction to  \LaTeX \pause 
+\item Course 2 \pause 
+\item Termpapers and presentations with \LaTeX \pause 
+\item Beamer class
+\end{enumerate}
+}
+
+\section{Section no.3} 
+\subsection{Tables}
+\frame{\frametitle{Tables}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Date} & \textbf{Instructor} & \textbf{Title} \\
+\hline
+WS 04/05 & Sascha Frank & First steps with  \LaTeX  \\
+\hline
+SS 05 & Sascha Frank & \LaTeX \ Course serial \\
+\hline
+\end{tabular}}
+
+
+\frame{\frametitle{Tables with pause}
+\begin{tabular}{c c c}
+A & B & C \\ 
+\pause 
+1 & 2 & 3 \\  
+\pause 
+A & B & C \\ 
+\end{tabular} }
+
+
+\section{Section no. 4}
+\subsection{blocs}
+\frame{\frametitle{blocs}
+
+\begin{block}{title of the bloc}
+bloc text
+\end{block}
+
+\begin{exampleblock}{title of the bloc}
+bloc text
+\end{exampleblock}
+
+
+\begin{alertblock}{title of the bloc}
+bloc text
+\end{alertblock}
+}
+
+\end{comment}
+
+\end{document}
+

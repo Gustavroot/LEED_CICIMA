@@ -1,0 +1,720 @@
+\documentclass[letter]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{listings}
+\usepackage[vmargin=4cm,tmargin=3cm,hmargin=2cm,letterpaper]{geometry}%
+%para poder usar begin comment y end document y asi comentar varias lineas
+\usepackage{verbatim}
+
+
+\graphicspath{{images/}}
+
+\newcommand{\entitle}[1]{
+  \vspace{0.3cm}%
+  \noindent%
+  \textbf{#1}%
+  \vspace{0.2cm}%
+  \hrule\vspace*{0.5mm}%
+  \noindent%
+  \rule{\linewidth}{0.5mm}%
+  \vspace{0.5cm}%
+}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\uic}{blue} %user-input color
+\newcommand{\uim}{\_\_} %user-input marker
+\newcommand{\userinput}[1]{\textcolor{\uic}{\uim#1\uim}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{center}
+\entitle{Bitácora de trabajo \\ Gustavo Ramírez Hidalgo \\ Proyecto final - SP2118}
+\end{center}
+
+
+\section{\normalsize Descripción general:}
+El proyecto consiste en el empleo de OpenCV para el estudio de cierto tipo de videos generados a partir de la técnica de física experimental llamada LEED (low-energy electron diffraction), y generar a partir de ellos, en última instancia, una visualización tridimensional de las capas de material que pudieron ser accesadas por las ondas electromagnéticas, y que por lo tanto son las que se pudieron visualizar (hay que tener claro que esta es una visualización a través de modelaje).
+
+
+\section{\normalsize Sobre LEED:}
+Low Energy Electron Diffraction.
+
+\section{\normalsize Funcionalidades básicas del programa:}
+\begin{itemize}
+\item La ejecución del script "transformer.sh"\ permite hacer una homogenización de los videos que se encuentran en el directorio de videos, y si el directorio de transformados existe, lo borra (de manera recursiva) y coloca ahí a los videos transformados.
+\item La ejecución del script "general.sh"\ permite ejecutar el programa que hace el tratado de los videos que están en el directorio de videos transformados.
+\item DIBUJADO: para dibujar sobre el video, se presiona la letra "q"\ para detener el video, luego con el mouse se dibuja sobre el frame en el cual se detuvo el video, y al soltar el mouse en ese trazo, se autocompleta el polígono formado por los puntos que fueron tocados por el mouse. También se puede dibujar sin presionar la letra para detención, pero hay un mayor control de la otra forma.
+\item INTERRUPCIÓN: presionar la letra "s"\ permite la interrupción de un video, es decir, se sale del tratamiento de ese video, y se pasa a analizar el siguiente video en el orden en que estén en el directorio de videos transformados.
+\item SOBRE EL PRIMER POLÍGONO DIBUJADO: hay que tomar en cuenta que el primer polígono dibujado no será tomado en cuenta para el análisis, pues simplemente servirá como referencia para el usuario, puesto que la grabación contiene más de lo que se quiere, y la imagen 2D generada al final (por cada archivo de video) debe tener alguna forma de interpretarse (aparte del marco de referencia).
+\end{itemize}
+
+
+\section{\normalsize Procedimientos:}
+Para la instalación y puesta en marcha de la biblioteca de Python llamada OpenCV, se hizo uso de la documentación oficial de dicha biblioteca.\footnote{http://docs.opencv.org/trunk/doc/py\_tutorials/py\_tutorials.html}\\
+De dicha documentación oficial, los tutoriales útiles fueron los 3 primeros, a saber: \textit{Introduction to OpenCV}, \textit{Gui features in OpenCV} y \textit{Core operations}.\\
+Se dará a continuación una descripción general de cada uno de esos tutoriales; principalmente se hará mención de los aspectos más importantes para el desarrollo de este proyecto:
+\subsection{\normalsize \textit{Introduction to OpenCV}}
+Antes que todo, es importante hacer mención de algunas generalidades de OpenCV. OpenCV fue iniciado en Intel, en 1999. OpenCV-Python es el API de Python para OpenCV. Este API hace uso de la capacidad que se tiene en Python de crear \textit{wrappers}, los cuales consisten en código de C o C++, el cual luego se empaqueta y es llamado desde Python. Así, básicamente lo que se hace en OpenCV-Python es un uso directo del API de OpenCV para C++, y se aprovechan además ciertas características importantes de Python.\\
+Un buen conocimiento de Numpy es requerido\footnote{http://wiki.scipy.org/Tentative\_NumPy\_Tutorial}, en caso de que se quiera hacer un uso provechoso (desde el punto de vista de la escritura de códigos optimizados) de OpenCV-Python.\\
+En cuanto a la versión de Python que se utilizará en este proyecto, es la 2.7.4. En Ubuntu (el sistema operativo sobre el cual se desarrolló este programa), Python viene instalado por defecto, así como python-numpy.\\
+Por otro lado, es necesario instalar OpenCV:
+\lstset{language=bash}
+\begin{lstlisting}
+$ sudo aptitude install libopencv-dev
+\end{lstlisting}
+
+Pero una instalación de este tipo no funcionó. Se procedió a desinstalar:
+
+\begin{lstlisting}
+$ sudo aptitude purge libopencv-dev
+\end{lstlisting}
+
+Y después, se optó por la instalación a través del código fuente\footnote{http://stackoverflow.com/questions/15790501/why-cv2-so-missing-after-opencv-installed}. Se descargó la versión 2.4.8\footnote{http://opencv.org/downloads.html}. Luego, en el directorio /home/user/Downloads, se ejecutaron los siguientes comandos:
+
+\begin{lstlisting}
+$ unzip opencv-2.4.8.zip
+$ cd opencv-2.4.8
+$ mkdir release
+$ cd release
+$ cmake -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local -D
+BUILD_NEW_PYTHON_SUPPORT=ON -D BUILD_EXAMPLES=ON ..
+$ make
+$ sudo make install
+\end{lstlisting}
+
+Incluso después de esto, parece ser necesario llevar a cabo un par de instalaciones más:
+
+\begin{lstlisting}
+$ sudo aptitude install python-dev
+$ sudo aptitude install python-opencv
+\end{lstlisting}
+
+Luego, basta con ejecutar en la terminal:
+
+\begin{lstlisting}
+$ python
+\end{lstlisting}
+
+y en el intérprete interactivo de Python que sale a continuación, se escribe:
+
+\begin{lstlisting}
+>> import cv2
+\end{lstlisting}
+
+y si no da error, quiere decir que todo está bien con la instalación de OpenCV.\\
+Además, es importante instalar la siguiente biblioteca de Python (la cual se complementa muy bien con OpenCV, y permite, entre otras cosas, desplegar imágenes y llevar a cabo ciertas operaciones especiales sobre ellas, como por ejemplo aplicar zoom):
+
+\begin{lstlisting}
+$ sudo aptitude install python-matplotlib
+\end{lstlisting}
+
+
+
+
+
+
+
+\subsection{\normalsize \textit{Gui features in OpenCV}}
+
+
+Al ir desarrollando el programa, se fueron presentando problemas en la ejecución (principalmente con el método VideoCapture del objeto cv2). Después de varias búsquedas, se encontró que la solución es hacer una instalación adecuada de ffmpeg\footnote{http://answers.opencv.org/question/263/videocapture-is-not-working-in-opencv-242/}. Así, se llevaron a cabo los siguientes pasos (se descargó la última versión de ffmpeg a través de un repositorio git \footnote{http://www.ffmpeg.org/download.html}):
+
+\begin{lstlisting}
+$ git clone git://source.ffmpeg.org/ffmpeg.git ffmpeg
+$ sudo aptitude install libfaac-dev
+$ wget http://downloads.sourceforge.net/project/lame/lame/3.98.4/lame-3.98.4.tar.gz?
+r=http%3A%2F%2Fffmpeg.zeranoe.com%2Fforum%2Fviewtopic.php%3Ff%3D5%26t%3D94&ts=133914
+0293&use_mirror=ignum
+$ tar -xvzf lame-3.98.4.tar.gz
+$ cd lame-3.98.4
+$ ./configure
+$ make
+$ sudo make install
+$ sudo aptitude install libopencore-amrwb-dev
+$ sudo aptitude install libopencore-amrnb-dev
+$ sudo aptitude install libtheora-dev
+$ sudo aptitude install libvorbis-dev
+$ sudo aptitude install libx264-dev
+$ sudo aptitude install libxvidcore-dev
+$ sudo aptitude install libxext-dev
+$ sudo aptitude install libxfixes-dev
+$ cd ffmpeg
+$ ./configure --enable-gpl --enable-libfaac --enable-libmp3lame --enable-libopencore
+-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable
+-libx264 --enable-libxvid --enable-nonfree --enable-postproc --enable-version3 --enable
+-x11grab --disable-yasm
+$ make
+$ sudo make install
+$ cd opencv-2.4.8/release
+$ cmake -D CMAKE_BUILD_TYPE=RELEASE ..
+$ make
+$ sudo make install
+\end{lstlisting}
+
+Pero se presentó un error en la recompilación. En específico, el error tiene que ver con: /usr/local/lib/libavcodec.a: could not read symbols: Bad value. La solución se encuentra en línea\footnote{http://www.ozbotz.org/opencv-installation/}. Para poder solucionar todos los errores, se tuvo que desinstalar todo nuevamente y hacer una instalación prácticamente desde cero.
+
+\begin{lstlisting}
+$ sudo aptitude remove ffmpeg x264 libx264-dev
+$ sudo aptitude update
+$ sudo apt-get install build-essential checkinstall git cmake libfaac-dev libjack-
+jackd2-dev libmp3lame-dev libopencore-amrnb-dev libopencore-amrwb-dev libsdl1.2-dev 
+libtheora-dev libva-dev libvdpau-dev libvorbis-dev libx11-dev libxfixes-dev
+libxvidcore-dev texi2html yasm zlib1g-dev
+$ sudo apt-get install libgstreamer0.10-0 libgstreamer0.10-dev gstreamer0.10-tools
+gstreamer0.10-plugins-base libgstreamer-plugins-base0.10-dev gstreamer0.10-plugins-
+good gstreamer0.10-plugins-ugly gstreamer0.10-plugins-bad gstreamer0.10-ffmpeg
+$ cd opencv-2.4.8
+$ sudo make uninstall
+\end{lstlisting}
+
+y se optará por trabajar con la versión 2.4.2 de OpenCV:
+
+
+\begin{lstlisting}
+$ sudo apt-get install libgtk2.0-0 libgtk2.0-dev
+$ sudo apt-get install libjpeg8 libjpeg8-dev
+$ mkdir src
+$ cd src
+$ wget ftp://ftp.videolan.org/pub/videolan/x264/snapshots/x264-snapshot-20120528-2245
+-stable.tar.bz2
+$ tar xvf x264-snapshot-20140206-2245.tar.bz2
+$ cd x264-snapshot-20140206-2245/
+$ ./configure --enable-shared --enable-pic
+$ make
+$ sudo make install
+$ mkdir src0
+$ cd src0
+$ wget http://ffmpeg.org/releases/ffmpeg-0.11.1.tar.bz2
+$ tar xvf ffmpeg-0.11.1.tar.bz2
+$ cd ffmpeg-0.11.1
+$ ./configure --enable-gpl --enable-libfaac --enable-libmp3lame --enable-libopencore
+-amrnb --enable-libopencore-amrwb --enable-libtheora --enable-libvorbis --enable-libx264
+--enable-libxvid --enable-nonfree --enable-postproc --enable-version3 --enable
+-x11grab --enable-shared --enable-pic
+$ make
+$ sudo make install
+\end{lstlisting}
+
+En algún momento, la instalación se complicó, debido a ciertos llamados inadecuados entre funciones de ciertos archivos, todo esto relacionado con libavcodec y ffmpeg. Se fue al código fuente original de ffmpeg, y se ejecutó en la terminal:
+
+\begin{lstlisting}
+$ sudo make uninstall
+\end{lstlisting}
+
+Los segmentos de línea --enable-shared y --enable-pic son muy importantes, ya que previenen los errores que generaron toda la reinstalación de OpenCV (aquellos de no poder utilizar VideCapture).\\
+Continuando:
+
+\begin{lstlisting}
+$ wget http://www.linuxtv.org/downloads/v4l-utils/v4l-utils-1.0.1.tar.bz2
+$ tar xvf v4l-utils-1.0.1.tar.bz2
+$ cd v4l-utils-1.0.1
+$ ./configure
+$ make
+$ sudo make install
+\end{lstlisting}
+
+Y finalmente, se hace la instalación de OpenCV versión 2.4.2:
+
+\begin{lstlisting}
+$ wget http://sourceforge.net/projects/opencvlibrary/files/opencv-unix/2.4.2/OpenCV
+-2.4.2.tar.bz2
+$ tar xvf OpenCV-2.4.2.tar.bz2
+$ cd OpenCV-2.4.2/
+$ mkdir build
+$ cd build
+$ cmake -D CMAKE_BUILD_TYPE=RELEASE ..
+$ make
+$ sudo make install
+\end{lstlisting}
+
+Después de la instalación, hay que llevar a cabo algunas configuraciones en linux (para que identifique de manera adecuada todos los elementos de OpenCV):
+
+\begin{lstlisting}
+$ export LD_LIBRARY_PATH=/usr/local/lib
+(agregar este de arriba a .bashrc)
+\end{lstlisting}
+
+Además, hay que agregar las siguientes dos líneas a /etc/bash.bashrc:
+
+\begin{lstlisting}
+PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig
+export PKG_CONFIG_PATH
+\end{lstlisting}
+
+Y listo! Con estas configuraciones ya es posible hacer uso de OpenCV sin problemas.
+
+Ahora bien, en cuanto tamaño de video, es mejor hacer un reajuste antes de ejecutar el programa. Todos los videos son pasados al mismo tamaño (se ha elegido XxX, de manera levemente arbitraria). La transformación se hace básicamente con el siguiente comando (se agrega aquí con un ejemplo incorporado):
+
+\begin{lstlisting}
+/home/gustavo/Downloads/src0/ffmpeg-0.11.1/ffmpeg -i LEEDgraphite2.wmv -s 640x480
+-b:v 512k -vcodec mpeg1video -acodec copy LEEDtransformed2.wmv
+\end{lstlisting}
+
+Además del archivo llamado 'programa.py', que es el script en Python, llamado a su vez por el script en Bash 'general.py', se hizo un script (también en Bash) para transformar todos los archivos que vayan a estar adentro de 'videos/'.
+
+Aparte de todo lo mencionado anteriormente, cabe rescatar algunos puntos importantes de esta (segunda) sección de tutoriales.\\
+Los detalles de los scripts mismos se pueden encontrar en ellos, los cuales ya vienen con su correspondiente documentación. De esta sección, es importante mencionar lo siguiente:
+\begin{itemize}
+\item Los son tratables exactamente igual que las imágenes que se leen de archivos .png, .jpg, etc., y se les puede asignar eventos.
+\item El método waitKey(time) resulta ser muy útil, especialmente cuando se quiere detener un video, dibujar sobre él, y luego retomar la reproducción del video en ese punto de detención previo.
+\item La reproducción de videos con OpenCV es trucosa, y hay que tener en cuenta que el último frame al que se accesa (en caso de hacer uso de un while, combinado con el método isOpened del objeto generado a partir del llamado de la función cv2.VideoCapture(str)) no existe, por lo que hay que hacer una validación en ese caso.
+\item La combinación de waitKey(time) y destroyWindow(str), hacen posible una finalización del programa sin problema alguno, a pesar de interrumpirse incluso.
+\item El uso de círculos y polígonos como objetos para dibujo, resulta muy útil en el trazo de lazos cerrados sobre frames. Pero hay que hacer un llamado directo del frame (es decir, pasarlo por parámetro a la función empleada en la implementación del evento) o tenerlo como variable global. Si no se tiene acceso al frame sobre el que se quiere dibujar, es claro que no se podrá dibujar sobre él.
+\item El uso de listas anidadas resulta muy útil, e incluso indispensable, en el redibujado de lazos cerrados sobre los frames posteriores al frame sobre el que se dibujó o dibujaron el o los lazos.
+\item El dibujado de figuras sobre imágenes, así como la implementación de eventos (como click derecho, por ejemplo) en las mismas, resultan las herramientas básicas e indispensables para el uso del mouse como herramienta de dibujo sobre un video.
+\end{itemize}
+
+En ocasiones se desconfigura OpenCV (porque se instaló otra versión anteriormente, y esa versión no es compatible con la versión específica de ffmpeg, o porque está mal instalada, o por la razón que sea), y es preferible en ese caso llevar a cabo la instalación de nuevo:
+
+\begin{lstlisting}
+$ cd build
+$ sudo make uninstall
+$ sudo make install
+\end{lstlisting}
+
+\subsubsection{Sobre la escala de grises}
+
+Cuando se extrae la imagen de un frame (con el método cvtColor, propio del objeto cv2), se pasan dos parámetros: el frame y una constante; esta última, se eligió en este caso igual que cv2.COLOR\_BGR2GRAY, ya que se desea hacer un análisis de las imágenes en escala de grises.
+
+La escala de grises\footnote{http://es.wikipedia.org/wiki/Escala\_de\_grises} es un intermedio entre la escala color y la escala blanco y negro. En la escala de grises, a cada pixel se le asigna un blanco, un negro, o una tonalidad intermedia.
+
+\subsubsection{Sobre los histogramas}
+
+Los histogramas\footnote{http://opencvpython.blogspot.com/2013/03/histograms-1-find-plot-analyze.html} son herramientas muy útiles en el análisis de imágenes. Estas son gráficas de valor en escala de grises, contra cantidad de pixeles con ese valor.
+
+\subsubsection{Algunos aspectos importantes del programa, en general}
+
+\begin{itemize}
+\item Estos puntos importantes que se señalan aquí, son básicamente los pasos (generales) seguidos después de que se tuvo a mano un guardado de las ubicaciones de los puntos en el espacio que conforman a los polígonos dibujados.
+\item Se creó una lista (se llamó listaIntensidades) para el guardado de las intensidades promedio de los polígonos dibujados. Hay una correspondencia uno a uno entre la cantidad de entradas de esta lista, y el número de videos a procesar. El número de entradas de cada una de las entradas de la lista listaIntensidades, es igual que el número de polígonos dibujados, para cada uno de los videos procesados.
+\item Se hizo un rotulado de los polígonos.
+\item Hay que tomar en cuenta que el primer polígono dibujado no será tomado en cuenta para el análisis, pues simplemente servirá como referencia para el usuario, puesto que la grabación contiene más de lo que se quiere, y la imagen 2D generada al final (por cada archivo de video) debe tener alguna forma de interpretarse (aparte del marco de referencia).
+\item Se generaron imágenes 2D, una por cada video, en las cuales se hace un dibujado de un plano cartesiano, y en él los polígonos trazados para ese video en específico.
+\item Al trabajar con contornos (contours) en OpenCV, se puede hacer de dos maneras. Obteniendo dichos contornos a través de ciertos métodos aplicados sobre la imagen (es decir, detectando los contornos en la imagen y no dibujándolos a mano), o se pueden dibujar los contornos con el mouse, como se hizo en este proyecto. Para este segundo caso, entonces no hay que hacer uso del método "findContours()", puesto que ya se tienen a disposición los contornos (los contornos son simplemente conjuntos de puntos, de los cuales ya se dispone en la lista listadoFilesLazos).
+\item Sobre la intensidad promedio adentro de los polígonos: para obtener la intensidad promedio del conjunto de pixeles interiores a un polígono, en una escala de grises, es necesario hacer uso del concepto de máscara\footnote{http://opencvpython.blogspot.com/2012/06/hi-this-article-is-tutorial-which-try.html}.
+\item Sobre los centroides de los polígonos: para obtener el centroide\footnote{http://opencvpython.blogspot.com/2012/06/contours-3-extraction.html} de un polígono con OpenCV, basta con generar un arreglo numpy (el contorno, generado a partir de una lista de puntos), y luego aplicarle a dicho arreglo la siguiente secuencia de operaciones:
+
+\lstset{language=Python}
+\begin{lstlisting}
+M = cv2.moments(arrayContour)
+centroid_x = int(M['m10']/M['m00'])
+centroid_y = int(M['m01']/M['m00'])
+\end{lstlisting}
+\item Se llevó a cabo un guardado adecuado de la información de las intensidades, esto en archivos txt, para un posterior procesamiento con gnuplot.
+\item Se hizo un llamado a gnuplot para el graficado de las intensidades vs tiempo.
+\item Se creó un repositorio en Github, al cual se hace push de manera automática en el script general.sh. El guardado de carpetas es tal que al guardarse los resultados del análisis, se hace con la fecha, y además se le agrega un identificador único (en este caso se empleó el comando 'date +\%s').
+\item El scripting con gnuplot es un poco trucoso. En medio de un script de bash común y corriente, si se agrega la línea "gnuplot < \ < \ EOF"\, entonces se puede proseguir con líneas de scripting como si se estuviera trabajando en gnuplot (es importante notar que el scripting de gnuplot se cierra con la serie de letras EOF, ver script general.sh). Esto sirve para procesar con gnuplot un conjunto de archivos, como es el caso de este programa. Esta implementación se llevó a cabo en el archivo general.sh.
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{comment}
+\section{\normalsize Introducción:}
+La primera mitad del siglo XX se vio dominada por teorías generadoras de cambios radicales en profundidad, mientras que las teorías de la segunda mitad de ese siglo fueron teorías de ancho, de tamaño, de grosor, generadoras de conocimiento en masa pero no tan profundo.\\
+Einstein pasó la última parte de su vida tratando de unificar teorías de la forma en que había entendido la gravedad, como propiedades del espacio, y trató de integrar el electromagnetismo con esta visualización.\\
+¿Por qué hay partículas que vienen en tripletes, y algunas son completamente iguales excepto porque una de ellas es 35000 veces más grande que otra? ¿Cómo interrelacionar gravedad y mecánica cuántica para unificarlas? Preguntas profundas. Imaginar un acto, con una puerta que no se vuelve real a menos que un actor pase a través de ella.\\
+Las palabras \textit{fuerzas} e \textit{interacciones} se pueden utilizar indistiguiblemente, a sabiendas de que las fuerzas son entendidas hoy como un intercambio de partículas.\\
+
+
+
+
+
+\section{\normalsize Cap. 1: Preliminares:}
+\textit{Átomos, núcleos y partículas}: el tamaño de los átomos (capa electrónica) es del orden de 1/100000000 cm, y el núcleo es 100000 veces más pequeño. Como comparación, un núcleo del tamaño de una bola de tenis tendría su primer electrón a 4 millas. En 1911 Rutherford descubrió este gran vacío al disparar partículas alfa\footnote{Una partícula alfa es un núcleo de helio.}, y logró estimar el tamaño de un núcleo. Los nucleones son los constituyentes del núcleo. El agua pesada es aquella en la que se tienen dos deuterios (un hidrógeno con un neutrón de más) en vez de hidrógenos. La física nuclear estudia el núcleo del átomo (no específicamente sus constituyentes).\\
+Existen quarks \textit{up} y \textit{down}, y de colores rojo, azul y verde. Hasta donde se sabe, los quarks son \textit{point-like}, al igual que los electrones. A diferencia de los protones y neutrones, los quarks nunca se encuentran solos, desligados. Los gluones son los encargados de mantener unido el núcleo; la forma de energía de los gluones es alta, mientras que la del campo electromagnético en el átomo es baja, lo que lleva a la relación de masas entre electrón y núcleo. Algunos laboratorios importantes: (Europa) CERN, DESY, (EU) BNL, FERMILAB y SLAC.\\
+\textit{Fotones}: las ondas de radio, la luz visible, los rayos X y los rayos gamma, son todos chorros de fotones. La cuantización planteada por Planck en 1900 se trataba de una cuantización en la energía emitida, mientras que la cuantización de Einstein era una cuantización de la luz misma. Los fotones de la luz son distintos a los causantes de las interacciones electromagnéticas (on the shell and off the shell). \\
+\textit{Antipartículas}: las partículas y sus antipartículas tiene la misma masa y sus otras propiedades definidas las de las antipartículas en términos de las de las partículas. El fotón es su propia antipartícula. Incluso los quarks tienen sus antiquarks. El antihidrógeno es un positrón girando alrededor de un antiprotón.\\
+\textit{Masa y energía}: algunas ecuaciones importantes en la teoría de la relatividad de Einstein:
+\begin{center}
+$\displaystyle E=c\sqrt{p^{2}+m^{2}c^{2}} \ \ \ p=\frac{mv}{\sqrt{1-\frac{v^{2}}{c^{2}}}} \ \ \ E=\frac{mc^{2}}{\sqrt{1-\frac{v^{2}}{c^{2}}}} \ \ \ v=\frac{pc^{2}}{E}$
+\end{center}
+En un sentido clásico, hay una relación muy fácil entre energía, masa y velocidad. Al hacer uso de partículas elementales, se vuelve importante utilizar las relaciones más complicadas de las altas velocidades, y ya no es la velocidad la que juega un rol tan importante en la descripción del objeto, sino más bien el momentum y la energía.
+\textit{Eventos}: un evento es un suceso, una reacción entre partículas. En física de partículas se investigan muchísimos eventos antes de poder explicar lo que ha pasado en una situación específica. No hay un comportamiento fijo para las partículas inestables. Un tiempo de vida es determinado por medio de un promedio en una gran cantidad de decaimientos observados; esto es gracias a la mecánica cuántica, ya que se puede ser muy preciso sobre algún promedio, pero no sobre un evento en específico. Un protón decae (en promedio a los diez minutos) en un protón, un electrón y un antineutrino\footnote{El neutrino es una partícula que no está presente en la materia a nuestro alrededor.}, y esto se puede entender mejor desde adentro al saber que un quark down decae en un up, un electrón y un antineutrino. Un neutrón no envejece, y es inestable, aunque no decae en un núcleo de helio por ejemplo, debido a que causaría la aparición de un protón, lo que requiere más energía (debido a la repulsión). La radioactividad $\displaystyle \beta$ se debe al decaimiento de un neutrón en un núcleo; este decaimiento es posible cuando la diferencia en la energía de ligadura para el protón y el neutrón es menor que la diferencia de masa (en unidades de energía) para ambos. La radioactividad fue descubierta por Becquerel en 1896, y fuertes pioneros fueron Pierre Curie, Marie Curie y Rutherford. La fuerza fuerte no afecta a los electrones o a los neutrinos.\\
+\textit{Electron-Volts y otras unidades}: las relaciones $\displaystyle E=mc^{2}$ y $\displaystyle E=h\nu$ fijan la escala para todos los fenómenos cuánticos. Las unidades naturales son tales que $\displaystyle c$ y $\displaystyle h/2\pi$ son ambas 1. 
+\textit{Nombres de partículas y el alfabeto griego}: el alfabeto griego (mayúsculas y minúsculas) así como el latín, son muy empleados para nombrar partículas.
+\textit{Notación científica}: escala de prefijos para unidades derivadas.
+
+
+
+\section{\normalsize Cap. 2: El modelo estándar:}
+
+
+
+
+
+\section{\normalsize }
+
+
+
+
+\section{\normalsize }
+
+
+
+
+\section{\normalsize }
+
+
+
+
+
+
+\newpage
+\begin{center}
+\textbf{Biografías}.
+\begin{itemize}
+\item Max Planck: 1858-1947. En 1918 recibe el premio nóbel. Fue pianista, componía música, y se desempeñó como cantante y actor, e incluso escribió una ópera ("Love in the woods"). Su familia: después de 22 años de casados, su esposa muere, quedándose con 2 hijos y 2 hijas, el mayor muere en WW1, sus hijas dando a luz, y su hijo menor muere ejecutado por un atentado contra Hitler.
+\item Niels Bohr: 1885-1962. En 1913 propuso el modelo del átomo con núcleo y electrones girando alrededor de él. En la conferencia de Solvey de 1927 se iniciaron las discusiones Bohr-Einstein. En 1922 recibe el premio nóbel. Durante la segunda guerra mundial escapó de Dinamarca y se vio envuelto en el proyecto de la bomba atómica de EU. Después de la guerra vuelve a Copenague para jugar un papel importante en el establecimiento del CERN.
+\item Ernest Rutherford: 1871-1937. Investigó y clasificó la radioactividad. Realizó los primeros experimentos evidenciando un núcleo y recibió el premio nóbel en química en 1908. Después del premio nóbel, trabajó en la dispersión de partículas alfa con un núcleo, creando la teoría a partir del experimento hecho por Geiger y Marsden. La aleatoriedad de la radioactividad fue percibida por Rutherford debido a la irregularidad en la forma en que sonaba un contador Geiger cerca de una fuente radioactiva. Rutherford era nativo de Nueva Zelanda. Su laboratorio Cavendish (construido por Maxwell en Cambridge) fue generador de varios premios nóbel (Chadwick y Cockcroft).
+\item James Clerk Maxwell: 1831-1879. Contribuyó en el electromagnetismo y en el estudio de sistemas con muchas partículas. Fue el primer director del laboratorio Cavendish.
+\item Paul Dirac: 1902-1984. En 1928 combinó mecánica cuántica con relatividad y en 1929 introdujo la idea de una antipartícula. Dirac es considerado el fundador de QFT. Mecánica cuántica permite determinar todos los posibles estados de un electrón alrededor de un átomo, mientras que QFT permite explicar y describir la luz en el decaimiento de electrones de un nivel energético a otro en un átomo. Recibió su premio nóbel en 1933.
+\item Wilhelm Röntgen: 1845-1923. Descubrió los rayos X. Su invención inspiró a Becquerel a estudiarlos. Von Laue estableció, en 1912, la longitud de onda de los rayos X. Röntgen fue el primero en recibir un premio nóbel en física, en 1901.
+\item Marie Curie (1867-1934) y Pierre Curie (1859-1906): juntos descubrieron que habían elementos radioactivos además del uranio, a saber polonio y radio, y no solo descubrió estos elementos Marie, sino que también los aisló y estudió su naturaleza y compuestos. Otra mujer con premio nóbel en física (1963) es Maria Goeppert-Mayer. A Lisa Meitner (1878-1968) no le fue compartido el premio nóbel en química que a Otto Hahn (1879-1968) le fue entregado en 1944.
+
+
+
+
+\end{itemize}
+
+\end{center}
+
+
+
+
+
+
+
+\newpage
+
+\begin{thebibliography}{1}
+\bibitem{Link1} Falta hacer la referencia aquí.
+\end{thebibliography}
+
+
+\end{comment}
+
+\begin{comment}
+
+\section{\normalsize Sobre las estructuras de datos:}
+Cuando se declara una estructura, se hace con el siguiente formato: \textit{struct nombredeestructura(abre llave)tipo1 nombre1;, tipo2 nombre2; etc.(cierra llave) identificador1, identificador2, etc.;}. Estas últimas declaraciones hechas con los identificadores, después de las llaves, son opcionales, pero lo que no es opcional es escribir punto y coma al final de la declaración de la estructura. Luego, para accesar a cada uno de los miembros de la estructura, de los diferentes objetos declarados con ese tipo de estructura, se utiliza el punto. Una vez llamado cada miembro con el punto, se pueden utilizar como variables de los tipos que son.\\
+El nombre de la estructura pasa entonces a ser un tipo de variable, y por lo tanto se pueden crear punteros de igual manera que con cualquier otra variable. Es cuando se crean estos punteros a estructuras, que entra en uso el operador flecha, el cual es exclusivo para punteros a objetos con miembros, y tiene un formato: puntero->miembro, que es equivalente a: (*puntero).miembro, y ambos son diferentes de *(puntero.miembro). Además, cabe destacar que una estructura puede tener otra estructura como miembro.
+
+\section{\normalsize Sobre otros tipos de datos:}
+Existen varios:\\
+\textit{\textbf{Tipos de datos definidos}}: Para crear tipos de datos definidos (sinónimos de otros tipos de datos, ya sean simples o compuestos), se utiliza la palabra typedef.\\
+\textit{\textbf{Uniones}}: Para declarar una unión, es igual que para declarar una estructura, tienen exactamente el mismo formato. La diferencia aquí es que los miembros son dependientes, es decir, si se modifica a un miembro de una unión, todos los demás miembros de la unión serán modificados, e igualmente una unión puede tener adentro de ella todo tipo de variables, e incluso estructuras y arreglos. En las uniones anónimas, que son uniones en las cuales no se especifican identificadores, entonces se accesa sus miembros sin hacer uso de identificadores.\\
+\textit{\textbf{Enumeraciones}}: Para crear tipos completa y absolutamente nuevos, se utiliza la palabra enum. Con esta, se sigue un formato de escribir primero enum, luego el nombre del nuevo tipo de variables, y luego entre llaves los posibles valores que podrán tomar las variables que se declaren de este tipo. Además, a cada posible valor se le asigna un entero, por lo que el uso de los enteros o de los nombres que lleven esos posibles valores, son completamente equivalentes. Si no se hacen asignaciones de enteros, entonces se asignan de manera automática, en orden y del 0 en adelante.
+
+
+\section{\normalsize Sobre las clases:}
+El formato para declarar una clase es casi igual al usado con una estructura, excepto que en vez de la palabra struct, se usa la palabra class. Además, están los \textit{especificadores de acceso}, o access specifiers, que consisten en alguna de tres posibles palabras (private, protected y public) y que modifican los derecho de acceso de los miembros adentro de ellos. En el caso de private, el acceso a un miembro sólo puede ser hecho por otro miembro de la misma clase y por sus amigos, y en el caso de protected también puede haber acceso por parte de las clases derivadas. En el caso de public, cualquiera puede accesar, siempre y cuando esté adentro del alcance del objeto. Así, cuando se utiliza herencia, la clase siguiente puede accesar lo que esté en protected y en public.\\
+Un operador nuevo que surge con las clases, es el operador de alcance (::), con el cual se puede hacer la definición completa de un miembro de la clase, desde afuera de la declaración de la clase.\\
+A un objeto también se le llama instancia.\\
+Un constructor es en realidad otra función o miembro más de la clase, que no se llama con el operador punto, sino que al crear un objeto de la clase, es llamada de manera automática, y si el constructor recibe parámetros, hay que pasarlos en la creación del nuevo objeto. Entonces, como un constructor es una función como cualquier otra, se puede sobrecargar. Si hay un constructor que no recibe parámetros, y queremos crear un objeto que llame en su creación al constructor que no recibe parámetros, entonces hay que crearlo así: 		nombredelaclase objeto;, es decir, no hay que usar paréntesis. Por esto es que, cuando se declara una clase y en ella no se especifica el constructor, entonces al crear un objeto de esa clase, se hace sin utilizar paréntesis, y esto se debe a que el compilador crea un constructor por defecto, pero si se especifica el constructor, o los constructores, entonces el compilador ya no agrega ese constructor por defecto.\\
+Además de la creación por defecto de un constructor, cuando no se asigna uno, también el compilador crea por defecto un constructor de copia y un operador de asignamiento de copiado. Las clases y las estructuras son casi exactamente lo mismo, e incluso ambas pueden tener funciones como miembros, pero la única diferencia es que en las estructuras los miembros tienen acceso público, en vez de privado como en el caso de las clases.
+
+
+
+\end{comment}
+
+
+
+
+
+
+
+
+
+
+
+\begin{comment}
+
+
+
+\begin{center}
+\entitle{Proyecto 1:\\Estructuras Abstractas de Datos y Algoritmos para Ingeniería\\Programación en paralelo utilizando la biblioteca MPI}
+
+\chapter{Gustavo Alonso Ramírez Hidalgo - A75176\\Jose Andrés Reyes Víquez - A7XXXX\\XX/XX/2012}
+\end{center}
+
+
+
+\section{{\normalsize Sobre programación en paralelo:}}
+Programación en paralelo es un método de programación\footnote{Tomado de \cite{Rodriguez}.} con el cual se puede ejecutar una misma tarea en distintos procesadores. Entre los modelos de programación en paralelo están:
+\begin{itemize}
+\item Paralelizar información: conocido como Single Instruction/Multiple Data (SIMD). Un mismo conjunto de instrucciones se aplica simultáneamente sobre distintos datos.
+\item Paralelizar tareas: conocido como Multiple Instruction/Multiple Data (MIMD). Distintas instrucciones se aplican sobre distintos datos.
+\end{itemize}
+El MPI está diseñado para MIMD. Otro concepto importante para la programación en paralelo, que se debe aclarar, es el de \textit{cluster}. Un cluster de computadoras (específicamente de éstas, puesto que puede haber cluster de otras cosas) es un conjunto de computadoras conectadas entre sí y que trabajan una tarea relacionada. Cada procesador de cada una de las computadoras que componen al cluster, se puede considerar como un nodo del cluster. Cuando se trata de la programación en paralelo, es cuando se quieren ejecutar procesos en paralelo, y para esto distribuirlos a través de los distintos nodos del cluster. De esta forma, las computadoras que tienen multiprocesador tienen varios nodos del cluster del cual forman parte. Cuando se paraleliza, la característica principal por la que se vela es una mayor velocidad; así, hay procesos que no son paralelizables del todo, y otros que a pesar de ser paralelizables no hay ganancia en el tiempo de ejecución, puesto que hay que tomar en cuenta el tiempo de comunicación entre procesadores.
+
+
+
+
+
+\section{{\normalsize Sobre MPI:}}
+Durante los años 80's\footnote{Tomado de \cite{Skjellum}.}, se dio un gran desarrollo en cuanto a paralelizamiento masivo y clusters, pero no existía gran portabilidad en los códigos creados. Para solucionar esto, se crearon librerías portables, tales como P4, Zipcode, Chameleon, PARMACS, y PVM. Pero eran todas muy diversas y poco unificables. Fue por esto que a mediados de 1992 se decidió crear MPI, hecho por el grupo llamado \textit{MPI Forum}, con ayuda de industrias, laboratorios nacionales y universidades.\\
+MPI es\footnote{Tomado de \cite{Rodriguez}.} una librería independiente del lenguaje de programación, y permite una fácil comunicación entre procesos distintos. Por medio de esta librería se pueden distribuir los procesos en distintos procesadores, ubicado ya sea en una o en varias máquinas. Permite además que se asignen varios procesos a un mismo procesador, por lo que si se tiene un cluster heterogéneo (los nodos tienen capacidades de procesamiento distintas), se puede asignar más tareas o procesos a los procesadores más rápidos. Las instrucciones básicas del MPI se pueden reducir a tres:
+\begin{itemize}
+\item Inicialización y terminación del MPI.
+\item Identificación de quién soy y cuántos somos.
+\item Envío y recepción de mensajes entre los procesos. \\ \\
+\end{itemize}
+
+(Esto todavía no está muy claro). Cabe destacar que para poder compilar los programas que implementan MPI, se utilizó el compilador \textit{mpicc}, y para ello se instaló el paquete \textit{lam4-dev}.
+
+
+\section{{\normalsize Sobre el algoritmo a implementar:}}
+
+
+\section{{\normalsize Sobre la implementación del algoritmo:}}
+
+
+\newpage
+
+
+\begin{thebibliography}{1}
+\bibitem{Rodriguez} \footnote{El formato para bibliografías empleado en este trabajo se basa en la sexta edición del \textit{Publication Manual of the American Psychological Association}.}Rodríguez, F.J. (2006). Programación en Paralelo con MPI en Clusters Linux.
+\bibitem{Skjellum} Skjellum, A., Lu, Z., Bangalore, P.V, Doss, N. (1995). Explicit Parallel Programming in C++ based on the Message-Passing Interface (MPI).
+\bibitem{Gropp} Gropp, W., Lusk, E., Skjellum, A. (1999). \textit{Using MPI : Portable Parallel Programming With the Message-passing Interface} (2da edición). MIT Press.
+\end{thebibliography}
+
+
+\newpage
+\begin{center}
+\textbf{Capítulo 1\footnote{Estos capítulos son intentos de resumen de los capítulos de la referencia \cite{Gropp}.}}
+\end{center}
+
+\begin{itemize}
+\item 1.1 ¿Por qué computación en paralelo?\\
+La razón principal por la que surge este paradigma de programación, es porque la ciencia teórica y la experimental se unen, y surgen los llamados científicos computacionales. Dichos científicos necesitan computadoras con gran capacidad de procesamiento (supercomputadoras).\\Por razones de dinero, hacer computadoras cada vez más capaces, con un sólo procesador, no era rentable. Por esto, se comenzaron a hacer redes de computadoras, y a utilizarlas como una sola computadora, y de aquí surge la idea de los clusters.
+
+\item 1.2 Obstáculos para el progreso de la computación en paralelo.\\
+Hay tres subdivisiones principales de la computación: hardware, algoritmos y software. En cuanto a hardware y algoritmos no hay tanto problema, es simplementa las limitaciones en cuanto a la electrónica y disipación de calor, lo que no permite que los procesadores sean cada vez más poderosos, y en cuanto a los algoritmos, hay tres realizables: de la física, de la matemática, y de la imaginación del 	programador, que tienen que ser unidos en un solo programa a la hora de la implementación. Pero el problema que surge es en cuanto a software, porque el software no siempre aprovecha al máximo las capacidades del hardware, o porque los compiladores no son tan buenos, puesto que hay compiladores que paralelizan de manera automática programas secuenciales, pero la mejor paralelización se da cuando el programador mismo la provee.\\MPI cubre muchos de los problemas mencionados.
+
+\item 1.3 ¿Por qué el paso por mensajes?
+\item 1.3.1 Modelos de computación en paralelo.\\
+Un modelo computacional es una visualización abstracta de un lenguage de programación, es decir, contempla las operaciones realizables en el lenguage, pero de manera general, no la forma explícita de escribir esas operaciones.\\Los modelos de computación en paralelo, se dividen dependiendo si la memoria es físicamente compartida o distribuida, cuánta comunicación hay entre procesadores, cuál es la unidad de ejecución, etc.\\El paralelismo de datos es una noción que viene del hardware, pero con el paso del tiempo se dejó de pensar en esta forma y la preocupación principal es de implementarlo en programas. Este tipo de paralelismo viene más bien de los datos, puesto que los programas parecen secuenciales.\\Hay un tipo de paralelismo llamado \textit{control parallelism}, en el cual el programador especifica explícitamente el paralelismo. Adentro de este tipo se encuentra el llamado \textit{shared-memory model}, en el cual todos los procesos tienen acceso a una sola dirección de memoria.\\De tercero y último se tiene el paso de mensajes como otra forma de paralelizar. En esta forma, lo que se tiene es que cada procesador controla su propia porción de memoria, pero se intercambian información entre ellos. Esto se puede realizar por medio de MPI.\\Hay otro tipo de paralelismo, llamado \textit{remote memory operations}, en el cual los procesadores pueden accesar a la memoria de los otros, sin estar estos otros involucrados en la lectura.\\Trabajar con threads es muy similar a trabajar con el modelo de memoria compartida (en el POSIX Standard está especificado cómo funcionan los threads).\\MPI toma ventaja de las tecnologías (hardware) que combinan todo lo anterior. Incluso toma más ventaja en donde haya más uso del \textit{shared-memory model}.
+
+\item 1.3.2 Ventajas del modelo de paso por mensajes.\\
+\textit{Universalidad}: es utilizable en todas las computadoras actuales.\\ \textit{Expresividad}: es útil al expresar algoritmos de paralelismo, y tiene el control que se pierde con los compiladores que paralelizan de manera automática.\\ \textit{Fácil de aplicar la correción de errores}: como hay una muy controlada compartición de memoria (sólo un proceso puede accesar a toda dirección de memoria), entonces la detección de errores se hace menos complicada.\\ \textit{Rendimiento}: funciona muy bien pues aprovecha muy bien la memoria caché.
+
+\item 1.4 Evolución de los sistemas de paso por mensajes.\\
+Antes de MPI lo que se tenía era un desorden en cuanto a programación en paralelo, puesto que no había un standard definido, y cada creador de computadoras utilizadas con este propósito creaba su propia biblioteca, pero muy personalizada y poco exportable. Esto empeoraba, puesto que esos creadores particularizaban cada vez más sus bibliotecas, con tal de obtener mayores ganancias.\\El problema de portabilidad era uno grande al crear MPI, puesto que cuando se hace lo más portable posible una biblioteca, esto va en detrimento de todas las grandes capacidades que tiene la biblioteca cuando se crea en un formato originalmente no portable.
+
+\item 1.5 El Foro MPI.\\
+En abril de 1992, el Centro de Investigación de Computación en Paralelo, patrocinó un taller de un día sobre Standards for Message Passing in a Distributed-Memory Environment. Esto contribuyó enormemente en la generación de ideas sobre el tema.\\En una conferencia sobre supercomputación, en noviembre de 1992, se creó un comité destinado a la creación de un standard para el paso por mensajes (el Foro MPI). Las metas y deberes para este grupo eran las siguientes:
+
+\begin{itemize}
+\item Hacer un standard portable.
+\item Operar de manera abierta al público.
+\item Terminar en un año.
+\end{itemize}
+Para lograr estos tres puntos, colaboradores de todo el mundo aportaron en el proyecto, así como representantes de muchas empresas, e igualmente asistieron los creadores de las otras bibliotecas portables sobre paso por mensajes (PVM, p4, Zipcode, Chameleon, PARMACS, TCGMSG y Express), así como especialistas en computación en paralelo.\\
+El standard fue terminado en mayo de 1994.
+
+\end{itemize}
+
+
+\newpage
+\begin{center}
+\textbf{Capítulo 2}
+\end{center}
+
+
+
+\end{comment}
+
+
+
+
+
+
+
+\begin{comment}
+
+
+\begin{center}
+\entitle{Laboratorio 3:\\Estructuras Abstractas de Datos y Algoritmos para Ingeniería}
+
+\chapter{Gustavo Ramírez Hidalgo - A75176 - 27/03/2012}
+\end{center}
+
+En este informe se tratará el desarrollo del laboratorio, pero no desde un inicio, sino más bien asumiendo los archivos \textit{.hh} y \textit{.cpp} que el profesor entregó semidesarrollados. Lo que se hizo en el laboratorio fue ampliar dichos ducumentos, e implementar no sólo las operaciones de suma entre los distintos tipos de vectores, sino también la resta, los dos tipos de producto entre vectores (escalar y vectorial) y el uso de la norma.
+
+
+
+
+
+\section{{\normalsize Creando el archivo \textit{makefile}:}}
+Antes de entrar al proceso de desarrollo de los archivos \textit{.hh} y \textit{.cpp}, se hablará un poco sobre el archivo makefile. Aquí se implementó este archivo de la misma forma que se hizo en laboratorios anteriores, solamente que en este caso había una mayor cantidad de archivos para compilar, por lo que se tuvo que agregar una línea de compilación para cada vector (2 y 3), así como otra para la creación de la clase \textit{vector} sola. Basta entonces con escribir \textit{make} a la hora de compilar (o \textit{make clean} para eliminar los archivos compilados).
+
+\section{{\normalsize Terminando de completar los archivos \textit{vector.hh} y \textit{vector.cpp}:}}
+Básicamente, al archivo \textit{vector.hh} no se le agregó más cosas a las que traía originalmente (declaración de la clase \textit{vector}, con el constructor y el destructor), y también se consideró innecesaria la modificación del archivo \textit{vector.cpp}, puesto que ya contenía lo necesario para el correcto funcionamiento de todo el programa (especificaciones del constructor y el destructor).
+
+
+
+
+\section{{\normalsize Terminando de completar los archivos \textit{vector2.hh} y \textit{vector2.cpp}:}}
+Los archivos \textit{vector2.hh} y \textit{vector2.cpp} sí fueron modificados ampliamente. En el caso del archivo \textit{vector2.hh}, se agregaron las declaraciones de las operaciones siguientes:
+\begin{itemize}
+\item Resta de un vector 2D a otro vector 2D.
+\item Norma de un vector 2D.
+\item Producto escalar entre un vector 2D y otro vector 2D.
+\item Suma de un vector 3D a uno 2D (cuyo retorno es un vector 3D).
+\item Producto escalar entre un vector 2D y un vector 3D.
+\end{itemize}
+Luego de que fueron declarados estos métodos, en el archivo \textit{vector2.cpp} se hicieron explícitas las maneras en que cada uno de ellos operan. No es necesario entrar en detalles acerca de cada una de esas operaciones, pero sí es importante notar que ambos productos escalares retornan un número (flotante), como es de esperar, y las demás operaciones retornan vectores, ya sean en 2D o en 3D. Se tuvo problemas principalmente con dos aspectos en esta parte.\\
+Primero, en la implementación de varias operaciones, cuando se quisieron hacer cosas como \textit{a.x} o \textit{a.y}, el compilador no lo permitía, cuando se quería hacer ello con vectores en 3D (para vectores en 2D sí lo permitía, puesto que se está tratando aquí de la clase \textit{vector2}), y la razón es clara, ya que los atributos tanto de \textit{vector2} como de \textit{vector3} (\textit{x},\textit{y} y \textit{z}), fueron declarados desde un inicio como private.\\
+Segundo, el compilador permitía llamar a una clase desde la declaración de la otra (es decir, se podía llamar a \textit{vector2} desde el archivo \textit{vector3.hh} por medio de
+\lstset{language=C++}
+\begin{lstlisting}
+#include"vector2.hh"
+\end{lstlisting}
+para poder hacer uso de las propiedades de los vectores en 2D), pero cuando se quería hacer lo inverso, no era permitido. Esto se debe a que se creaba un enciclamiento en las dependencias, es decir, se generaban conflictos en los nombres de los métodos puesto que el compilador colapsaba al tener un llamado cíclico entre ambos. Para solucionar esto se utilizó lo que se llama \textit{forward declarations}, que consiste en hacer una declaración en el archivo desde el cuál se va a llamar a la otra clase (en este caso se quiere llamar a \textit{vector3} desde \textit{vector2}, por lo cuál se hacía la declaración en el archivo \textit{vector2.hh}), y la declaración era tan fácil como:
+\lstset{language=C++}
+\begin{lstlisting}
+class vector3d;
+\end{lstlisting}
+Así, no era necesario hacer nada más que incluir como header al archivo \textit{vector3.hh}.\\
+Otra cosa importante de mencionar, relacionada con el primer problema de los dos anteriores, es que en la implementación del método de suma de un vector 3D a un vector 2D, se tuvo que crear un vector 3D auxiliar, en le método mismo. De esto se hablará un poco más en el apartado 5.
+
+
+
+
+\section{{\normalsize Terminando de completar los archivos \textit{vector3.hh} y \textit{vector3.cpp}:}}
+Para la ampliación de los archivos correspondientes a la clase \textit{vector3}, se realizó algo similar a lo anteriormente mencionado para los archivos de la clase \textit{vector2}, e incluso se tuvieron problemas similares, con soluciones idénticas.
+
+
+
+
+
+\section{{\normalsize Ampliando el archivo de implementación \textit{programa.cpp}:}}
+Finalmente, si se observa el archivo adjunto \textit{programa.cpp}, ahí se verán una serie de pruebas que se realizaron, para cada una de las operaciones implementadas. La forma que se imprimían los vectores o las pruebas mismas, fue cambiada un poco, para poder visualizar mejor las operaciones sobre y entre vectores.\\
+Continuando con lo que se mencionó en el apartado 3, cuando se ejecuta \textit{programa}, en la prueba de suma de un vector 3D a uno en 2D, se puede notar que aparecen las dos frases:\\
+\textit{Construyendo vector...}\\
+\textit{Destruyendo vector...}\\
+y esto se debe a que adentro del método fue creado un vector 3D auxiliar para poder llevar a cabo la operación. Esto podría solucionarse quitando en el archivo \textit{vector.cpp} el texto que despliegan tanto el constructor como el destructor, o implementando un arreglo en el método para que se retorne un arreglo y no un vector. Sea cuál sea la solución adoptada, no altera mucho la implementación misma, por lo que se decidió no realizarla.
+
+
+\end{comment}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\begin{comment}
+
+Para compilar este archivo ejecutar el siguiente código:.\\
+
+\lstset{language=bash}
+\begin{lstlisting}
+pdflatex latex\ intro.tex
+\end{lstlisting}
+
+Esto generará una archivo en formato pdf final. \textcolor{red}{\textsc{bienvenidos a latex}}\\
+
+Con el paquete \textbf{listings} es posible agregar código al documento, como se muestra a continuación para C, \textit{C++} y make.\\
+
+\lstset{language=C}
+\begin{lstlisting}
+#include <stdio.h>
+#include <stdlib.h>
+\end{lstlisting}
+
+\lstset{language=C++}
+\begin{lstlisting}
+#include<iostream>
+int main(void){
+  std::cout<<"Hola Mundo!" <<endl;
+  return 0;
+}
+\end{lstlisting}
+
+\lstset{language=make}
+\begin{lstlisting}
+OBJS = principal.cpp holaMF.o
+CC = g++
+DEBUG = -g
+CFLAGS = -Wall $(DEBUG) --pedantic -c
+LFLAGS = -Wall --pedantic $(DEBUG)
+TARGET = principal
+$(TARGET) : $(OBJS)
+$(CC) $(LFLAGS) $(OBJS) -o $(TARGET)
+holaMF.o : holaMF.h holaMF.cpp
+$(CC) $(CFLAGS) hola.cpp
+clean:
+\rm -f *.o $(TARGET)
+\end{lstlisting}
+
+Para agregar ítemes o enumeraciones usar los siguientes ambientes:
+
+\begin{itemize}
+\item Punto Primero
+\item Punto Segundo
+\end{itemize}
+
+\begin{enumerate}
+\item Número Primero
+\item Número Segundo
+\end{enumerate}
+
+Pero lo mejor de todo son las ecuaciones matemáticas: $\displaystyle \sum_{a}^{b}\frac{\ln x}{x^2 + 3x + \pi}$, no creen?: $\sum_{a}^{b}\frac{\ln x}{x^2 + 3x + \pi}$.
+
+\end{comment}
+
+
+\end{document}
