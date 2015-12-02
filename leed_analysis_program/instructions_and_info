@@ -1,0 +1,13 @@
+EXECUTION:
+ -- from terminal (at current dir):
+		chmod +x main_program_leed.sh (run this just 1st time)
+		./main_program_leed.sh
+ -- from interface:
+		right click over file named main_program_leed.sh,
+		select "open" and then "Run in Terminal". Then, just
+		follow instructions displayed in terminal
+
+
+
+
+

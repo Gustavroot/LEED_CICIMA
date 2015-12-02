@@ -1,0 +1,16 @@
+Ctrl+Alt+T
+cd /home/leed/Desktop/PROGRA_AND_DOCS/videos/
+nautilus .
+**COPIAR VIDEO EN VENTANA QUE SE ACABA DE ABRIR** -- OJO: el nombre del video no debe traer espacios
+**CERRAR VENTANA**
+--SI EL VIDEO ES DE MAS DE 1 HORA, CORTARLO CON LA SIGUIENTE LINEA EN LOS PEDAZOS QUE SE QUIERA--
+ffmpeg -i nombre_original -vcodec copy -acodec copy -ss xx:xx:xx -t xx:xx:xx nombre_cortado
+--DESPUES DE CORTAR EL VIDEO, VERIFICAR QUE EN videos/ ESTE EL SEGMENTO DE VIDEO QUE SE DESEE ANALIZAR--
+cd ..
+cd programa/
+./transformer.sh (esto reajusta el video al tamanyo de la pantalla)
+./VideosCutter.sh (esto segmenta el video en videos de 1 minuto)
+./general.sh (programa principal)
+
+
+

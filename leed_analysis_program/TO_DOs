@@ -1,0 +1,28 @@
+Programming side:
+ -- Conversion of ./full_videos_analysis/programa/programa.py to C++ code (OpenCV at C++ runs faster than in Python).
+ -- For the moment, if a contour is drawn, is only save at the end of the video segment. Fix this, so that the save is made righ after the contour is created.
+ -- 
+ -- 
+
+
+Control version system side:
+ -- 
+ -- 
+ -- 
+
+
+Documentation side:
+ -- write FULL dependencies list
+ -- 
+ -- 
+
+
+LICENSE:
+ -- http://creativecommons.org/publicdomain/zero/1.0/
+ -- 
+ -- 
+
+
+
+
+

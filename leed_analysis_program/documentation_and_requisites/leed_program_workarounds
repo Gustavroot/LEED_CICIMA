@@ -1,0 +1,15 @@
+PROBLEMS WITH FFMPEG INSTALLATION:
+
+ - Problems with gstreamer0.10-ffmpeg install:
+	http://www.webupd8.org/2014/03/get-firefox-and-phonon-gstreamer-to.html
+
+Se instalaron las últimas versiones de ffmpeg y v4l, a la fecha:
+ -- ffmpeg-2.7.1
+ -- 
+
+Problems when adding "import cv2" in Python:
+http://stackoverflow.com/questions/15790501/why-cv2-so-missing-after-opencv-installed
+
+FINAL RESOLUTION:
+
+http://stackoverflow.com/questions/25215102/installing-opencv-for-python-on-ubuntu-getting-importerror-no-module-named-cv2
