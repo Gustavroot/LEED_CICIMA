@@ -15,3 +15,6 @@ LEED Data Analysis Tool
 
     You should have received a copy of the GNU General Public License
     along with LEED Data Analysis Tool.  If not, see <http://www.gnu.org/licenses/>.
+
+Gustavo Ramirez Hidalgo, 2015
+tavroot@gmail.com
